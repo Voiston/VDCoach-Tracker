@@ -1,0 +1,4222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VDCoach Tracker - Suivi de Progression</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #FBFCFA;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Client List */
+        .client-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .client-card {
+            background: #686F8C;
+            padding: 12px;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+			position: relative !important;
+            transition: transform 0.3s, box-shadow 0.3s;
+			
+        }
+
+        .client-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+
+        .client-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .client-info {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .add-client-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+		
+		.sync-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    background: #3498db !important;
+    min-width: auto;
+}
+
+.sync-btn:hover {
+    background: #2980b9 !important;
+}
+
+        .add-client-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Exercise Builder */
+        .exercise-list {
+            margin-bottom: 20px;
+        }
+
+        .exercise-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .exercise-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .remove-exercise {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .exercise-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .exercise-input {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .exercise-input label {
+            font-size: 12px;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .exercise-input input {
+            padding: 8px;
+            font-size: 13px;
+        }
+
+        .add-exercise-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .add-exercise-btn:hover {
+            background: #5568d3;
+        }
+
+        /* Rating Scale */
+        .rating-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .rating-label {
+            min-width: 150px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .rating-scale {
+            display: flex;
+            gap: 8px;
+        }
+
+        .rating-button {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .rating-button:hover {
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .rating-button.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Save Button */
+        .save-btn {
+            background: #00CC66;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Back Button */
+        .back-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: #7f8c8d;
+        }
+
+        /* Session History */
+        .session-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .session-date {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .session-duration {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .session-exercises {
+            margin-bottom: 15px;
+        }
+
+        .session-exercise {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .session-exercise:last-child {
+            border-bottom: none;
+        }
+
+        .session-ratings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .rating-item {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .rating-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .session-notes {
+            margin-top: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Billing Styles */
+        .billing-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .billing-controls label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .billing-controls select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .billing-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .billing-table thead {
+            background: #686F8C;
+            color: white;
+        }
+
+        .billing-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .billing-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .billing-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .billing-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .billing-total {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .couple-badge {
+            display: inline-block;
+            background: #ECF5FB;
+            color: #d63031;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .manage-couple-btn {
+            background: #3498db;
+            color: #333;
+			border: none;
+			padding: 5px 9px;
+			border-radius: 5px;
+			font-size: 10px;
+			font-weight: 600;
+			cursor: pointer;
+			margin-top: 10px;
+			width: 15%;
+			transition: all 0.3s ease;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+        }
+
+        .manage-couple-btn:hover {
+            background: #48A2DE;
+			padding: 10px 14px;
+			font-size: 13px;
+			width: 100%;
+			box-shadow: 0 2px 8px rgba(94, 114, 228, 0.3);
+        }
+		
+		.manage-couple-btn:hover::after {
+		content: ' ' attr(data-full-text);
+		}
+
+        .duo-checkbox {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .duo-checkbox label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #856404;
+        }
+
+        .duo-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .group-participant {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .group-participant input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .group-participant label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .ratings-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .participant-ratings {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .participant-ratings h4 {
+            margin: 0 0 20px 0;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .rating-row {
+            margin-bottom: 20px;
+        }
+
+        .rating-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .rating-row label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .edit-session-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .edit-session-btn:hover {
+            background: #2980b9;
+        }
+
+        .delete-session-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+
+        .delete-session-btn:hover {
+            background: #c0392b;
+        }
+
+        .partner-name {
+            color: #d63031;
+            font-weight: 600;
+        }
+
+        .session-duo-badge {
+            display: inline-block;
+            background: #ffeaa7;
+            color: #d63031;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .billing-group-header {
+    background: #e8eaf6 !important;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+}
+
+.billing-group-header:hover {
+    background: #d1d5f0 !important;
+}
+
+.billing-group-header .billing-total {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.group-detail {
+    transition: all 0.3s ease;
+}
+
+        .performance-chart {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .performance-chart h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .performance-chart canvas {
+            max-height: 300px;
+        }
+
+        .performance-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .performance-table thead {
+            background: #686F8C;
+            color: white;
+        }
+
+        .performance-table th {
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .performance-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .performance-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .performance-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .performance-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .performance-improvement {
+            color: #27ae60;
+            font-size: 12px;
+        }
+
+        .performance-decline {
+            color: #e74c3c;
+            font-size: 12px;
+        }
+
+        .tracking-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tracking-stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .tracking-stat-card h4 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .tracking-stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .tracking-stat-label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #686F8C;
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card-label {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .stat-card-sublabel {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .stats-chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .stats-chart-container h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .modal-btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .modal-btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+/* Cacher les boutons par défaut sur desktop */
+@media (hover: hover) {
+    .client-card-actions,
+    .client-card > div[style*="position: absolute"] {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    .client-card:hover .client-card-actions,
+    .client-card:hover > div[style*="position: absolute"] {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+        @media (max-width: 768px) {
+            .client-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rating-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .rating-label {
+                margin-bottom: 10px;
+            }
+
+            .exercise-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ========== OPTIMISATIONS MOBILE PIXEL 6A ========== */
+        @media (max-width: 768px) {
+            /* Body et Container */
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            /* Header - Stack vertical */
+            header {
+                padding: 20px 16px;
+            }
+
+            header > div {
+                flex-direction: column;
+                gap: 20px !important;
+            }
+
+            header > div > div {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            /* Boutons header */
+            header .add-client-btn {
+                width: 100%;
+                justify-content: center;
+                min-height: 48px;
+                padding: 14px 20px;
+            }
+
+            /* Main content */
+            .main-content {
+                padding: 20px 16px;
+            }
+
+            /* Tabs - Scroll fluide */
+.tabs {
+    position: relative;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-right: 0;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    white-space: nowrap;
+}
+
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab {
+    padding: 14px 18px;
+    font-size: 14px;
+    min-height: 48px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.sync-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    background: #3498db !important;
+    min-width: auto;
+}
+
+.sync-btn:hover {
+    background: #2980b9 !important;
+}
+
+            /* Cartes clients - Plus d'espace */
+            .client-card {
+                padding: 12px;
+                min-height: 60px;
+            }
+			
+			.couple-badge {
+        font-size: 9px !important;
+        padding: 2px 6px !important;
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+            .client-name {
+        font-size: 16px !important;
+        padding-right: 80px !important;
+        margin-bottom: 0 !important;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: nowrap;
+        white-space: normal;
+    }
+
+.client-card-actions,
+    .client-card > div[style*="position: absolute"] {
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+	
+            .client-info {
+                display: none !important;
+            }
+
+            /* Boutons d'action client - Zones tactiles optimales */
+            .client-card > div[style*="position: absolute"] {
+                gap: 8px !important;
+            }
+
+            .client-card .delete-session-btn {
+                padding: 6px 8px !important;
+                min-width: 30px !important;
+                min-height: 30px !important;
+                font-size: 10px !important;
+            }
+			
+			 .client-card > div[style*="position: absolute"] {
+        top: 30% !important;
+        transform: translateY(-50%);
+    }
+
+            /* Bouton manage group */
+            .manage-couple-btn {
+                min-height: 20px;
+                padding: 4px 5px;
+                font-size: 7px;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .manage-couple-btn:hover {
+                transform: translateY(-1px);
+            }
+
+            /* Boutons généraux */
+            .add-client-btn {
+                min-height: 48px;
+                padding: 14px 24px;
+                font-size: 15px;
+            }
+
+            .back-btn {
+                min-height: 48px;
+                width: 100%;
+                padding: 14px 20px;
+            }
+
+            /* Formulaires - Éviter le zoom automatique */
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-group label {
+                font-size: 11px;
+                margin-bottom: 7px;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 12px;
+                font-size: 13px !important;
+                min-height: 40px;
+                border-radius: 8px;
+            }
+
+            .form-group textarea {
+                min-height: 80px;
+            }
+
+            /* Rating buttons - Plus grands */
+            .rating-button {
+                width: 48px;
+                height: 48px;
+                font-size: 17px;
+                border-radius: 10px;
+            }
+
+            .rating-scale {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            /* Exercices */
+            .exercise-item {
+                padding: 16px;
+            }
+
+            .exercise-input input {
+                padding: 12px;
+                font-size: 16px !important;
+                min-height: 48px;
+            }
+
+            .add-exercise-btn {
+                min-height: 48px;
+                padding: 14px 20px;
+                font-size: 15px;
+                width: 100%;
+            }
+
+            .remove-exercise {
+                min-height: 36px;
+                padding: 8px 12px;
+            }
+
+            /* Save/Cancel buttons */
+            .save-btn,
+            .modal-btn-primary {
+                min-height: 52px;
+                padding: 16px 24px;
+                font-size: 16px;
+                width: 100%;
+            }
+
+            .cancel-btn,
+            .modal-btn-secondary {
+                min-height: 52px;
+                padding: 16px 24px;
+                font-size: 16px;
+                width: 100%;
+            }
+
+            /* Modal buttons - Stack vertical */
+            .modal-buttons {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
+
+            .modal-btn {
+                width: 100%;
+                min-height: 52px;
+                padding: 16px;
+                font-size: 16px;
+            }
+
+            /* Modales - Bottom sheet avec poignée */
+            .modal {
+                padding: 0;
+                align-items: flex-end;
+            }
+
+            .modal-content {
+                max-width: 100%;
+                border-radius: 20px 20px 0 0;
+                max-height: 90vh;
+                animation: slideUpSmooth 0.3s ease-out;
+            }
+
+            @keyframes slideUpSmooth {
+                from {
+                    transform: translateY(100%);
+                }
+                to {
+                    transform: translateY(0);
+                }
+            }
+
+            .modal-header {
+                font-size: 20px;
+                padding-bottom: 16px;
+                position: relative;
+            }
+
+            .modal-header::before {
+                content: '';
+                display: block;
+                width: 40px;
+                height: 4px;
+                background: rgba(102, 126, 234, 0.3);
+                border-radius: 2px;
+                margin: 0 auto 16px;
+            }
+
+            /* Session cards */
+            .session-card {
+                padding: 16px;
+            }
+
+            .session-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .delete-session-btn,
+            .edit-session-btn {
+                min-height: 40px;
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            /* Billing table - Scroll optimisé */
+            .billing-table {
+                font-size: 13px;
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .billing-table thead,
+            .billing-table tbody,
+            .billing-table tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+
+            .billing-table th,
+            .billing-table td {
+                padding: 12px 8px;
+            }
+
+            .billing-table th {
+                font-size: 12px;
+                position: sticky;
+                top: 0;
+                background: #686F8C;
+                z-index: 10;
+            }
+
+            /* Stats cards */
+            .stats-grid,
+            .tracking-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .stat-card,
+            .tracking-stat-card {
+                padding: 16px;
+            }
+
+            .stat-card-value,
+            .tracking-stat-value {
+                font-size: 28px;
+            }
+
+            /* Performance charts */
+            .performance-chart,
+            .stats-chart-container {
+                padding: 16px;
+            }
+
+            /* Empty states */
+            .empty-state {
+                padding: 40px 20px;
+            }
+
+            .empty-state-icon {
+                font-size: 48px;
+            }
+
+            /* Ratings columns - Stack sur mobile */
+            .ratings-columns {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .participant-ratings {
+                padding: 16px;
+            }
+
+            /* Billing controls - Stack vertical */
+            .billing-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .billing-controls select {
+                width: 100%;
+                padding: 12px;
+                font-size: 16px !important;
+                min-height: 48px;
+            }
+
+            /* Group session checkbox */
+            .duo-checkbox {
+                padding: 16px;
+            }
+
+            .duo-checkbox input[type="checkbox"] {
+                width: 24px;
+                height: 24px;
+            }
+
+            /* Group participant */
+            .group-participant {
+                padding: 12px;
+            }
+
+            .group-participant input[type="checkbox"] {
+                width: 22px;
+                height: 22px;
+            }
+        }
+
+        /* ========== FEEDBACK TACTILE ========== */
+        @media (hover: none) and (pointer: coarse) {
+            button:active:not(:disabled),
+            .client-card:active,
+            .tab:active,
+            .rating-button:active {
+                transform: scale(0.98);
+                opacity: 0.8;
+                transition: all 0.1s;
+            }
+
+            .add-client-btn:active,
+            .save-btn:active {
+                transform: scale(0.97);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h1>VDCoach Tracker</h1>
+                    <p class="subtitle">Suivi des clients</p>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+    <button id="saveDriveBtn" onclick="saveToDrive()" class="add-client-btn sync-btn" style="display: none;">
+        💾 Save
+    </button>
+    <button id="loadDriveBtn" onclick="loadFromDrive()" class="add-client-btn sync-btn" style="display: none;">
+        📥 Load
+    </button>
+    <button id="connectDriveBtn" onclick="connectGoogleDrive()" class="add-client-btn sync-btn">
+        🔗 Drive
+    </button>
+</div>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+        </header>
+
+        <div class="main-content">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('clients')">Mes Clients</button>
+                <button class="tab" onclick="switchTab('session')" id="sessionTab" style="display:none;">Nouvelle Séance</button>
+                <button class="tab" onclick="switchTab('history')" id="historyTab" style="display:none;">Historique</button>
+                <button class="tab" onclick="switchTab('tracking')" id="trackingTab" style="display:none;">Suivi personnel</button>
+                <button class="tab" onclick="switchTab('performance')" id="performanceTab" style="display:none;">Tests de Performance</button>
+                <button class="tab" onclick="switchTab('billing')">Facturation</button>
+                <button class="tab" onclick="switchTab('coachStats')">Statistiques Coach</button>
+            </div>
+
+            <!-- Clients Tab -->
+            <div id="clientsTab" class="tab-content active">
+                <div class="client-grid" id="clientGrid"></div>
+                <button class="add-client-btn" onclick="openAddClientModal()">+ Ajouter un client</button>
+            </div>
+
+            <!-- Session Tab -->
+            <div id="sessionTab-content" class="tab-content">
+                <button class="back-btn" onclick="backToClients()">← Retour aux clients</button>
+                <h2 id="sessionClientName" style="margin-bottom: 20px; color: #667eea;"></h2>
+                
+                <form id="sessionForm" onsubmit="saveSession(event)">
+                    <div class="form-group">
+                        <label>Date de la séance</label>
+                        <input type="date" id="sessionDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Durée de la séance (minutes)</label>
+                        <input type="number" id="sessionDuration" min="1" value="60" required>
+                    </div>
+
+                    <div id="groupSessionCheckbox" class="duo-checkbox" style="display:none;">
+                        <label style="display: block; margin-bottom: 15px; font-size: 16px;">
+                            <input type="checkbox" id="isGroupSession" onchange="toggleGroupParticipants()">
+                            Séance en groupe
+                        </label>
+                        <div id="groupParticipants" style="display:none; margin-left: 30px;"></div>
+                    </div>
+
+                    <div id="sessionRatingsContainer">
+                        <h3 style="margin: 30px 0 20px 0; color: #333;">Indicateurs de la séance</h3>
+                        <div id="ratingsForParticipants"></div>
+                    </div>
+
+                    <h3 style="margin: 30px 0 20px 0; color: #333;">Exercices</h3>
+                    <button type="button" class="add-exercise-btn" onclick="addExercise()">+ Ajouter un exercice</button>
+                    <div id="exerciseList" class="exercise-list"></div>
+
+                    <div class="form-group" style="margin-top: 30px;">
+                        <label>Notes et commentaires</label>
+                        <textarea id="sessionNotes" placeholder="Remarques générales sur la séance..."></textarea>
+                    </div>
+
+                    <button type="submit" class="save-btn">Enregistrer la séance</button>
+                </form>
+            </div>
+
+            <!-- History Tab -->
+            <div id="historyTab-content" class="tab-content">
+                <button class="back-btn" onclick="backToClients()">← Retour aux clients</button>
+                <h2 id="historyClientName" style="margin-bottom: 20px; color: #667eea;"></h2>
+                <div id="sessionHistory"></div>
+            </div>
+
+            <!-- Personal Tracking Tab -->
+            <div id="trackingTab-content" class="tab-content">
+                <button class="back-btn" onclick="backToClients()">← Retour aux clients</button>
+                <h2 id="trackingClientName" style="margin-bottom: 20px; color: #667eea;"></h2>
+                
+                <!-- Period Filter -->
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <label style="font-weight: 600; color: #333; margin-right: 15px;">Période d'affichage :</label>
+                    <select id="trackingPeriodFilter" onchange="renderPersonalTracking()" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                        <option value="all">Toutes les séances</option>
+                        <option value="6" selected>6 derniers mois</option>
+                        <option value="3">3 derniers mois</option>
+                        <option value="1">1 dernier mois</option>
+                    </select>
+                </div>
+
+                <!-- Tracking Chart -->
+                <div id="trackingChartContainer"></div>
+
+                <!-- Stats Summary -->
+                <div id="trackingStats" style="margin-top: 30px;"></div>
+            </div>
+
+            <!-- Performance Tests Tab -->
+            <div id="performanceTab-content" class="tab-content">
+                <button class="back-btn" onclick="backToClients()">← Retour aux clients</button>
+                <h2 id="performanceClientName" style="margin-bottom: 20px; color: #667eea;"></h2>
+                
+                <!-- Add Test Form -->
+                <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 20px; color: #333;">➕ Ajouter un test de performance</h3>
+                    <form id="performanceTestForm" onsubmit="savePerformanceTest(event)">
+                        <div class="form-group">
+                            <label>Date du test</label>
+                            <input type="date" id="testDate" required>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+                            <div class="form-group">
+                                <label>💪 Pompes (max répétitions)</label>
+                                <input type="number" id="test_pompes" min="0" placeholder="Ex: 25">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>⏱️ Planche (secondes)</label>
+                                <input type="number" id="test_planche" min="0" placeholder="Ex: 60">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>↪️ Gainage oblique gauche (sec)</label>
+                                <input type="number" id="test_oblique_gauche" min="0" placeholder="Ex: 45">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>↩️ Gainage oblique droit (sec)</label>
+                                <input type="number" id="test_oblique_droit" min="0" placeholder="Ex: 45">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>🏃 AMRAP Squats 1min30</label>
+                                <input type="number" id="test_amrap_squats" min="0" placeholder="Ex: 40">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>💥 AMRAP Burpees 1min30</label>
+                                <input type="number" id="test_amrap_burpees" min="0" placeholder="Ex: 20">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>🔥 AMRAP Sit-up 1min30</label>
+                                <input type="number" id="test_amrap_situp" min="0" placeholder="Ex: 35">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="save-btn" style="margin-top: 20px;">Enregistrer le test</button>
+                    </form>
+                </div>
+
+                <!-- Performance Charts -->
+                <div id="performanceCharts" style="margin-bottom: 30px;"></div>
+
+                <!-- Performance History Table -->
+                <div id="performanceHistory"></div>
+            </div>
+
+            <!-- Billing Tab -->
+            <div id="billingTab" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <h2 style="margin: 0; color: #667eea;">💰 Facturation mensuelle</h2>
+                    <button onclick="exportMonthlyBackup()" class="add-client-btn" style="padding: 12px 25px;">
+                        💾 Backup + Factures
+                    </button>
+                </div>
+                
+                <div class="billing-controls">
+                    <label>Mois :</label>
+                    <select id="billingMonth" onchange="renderBilling()">
+                        <option value="0">Janvier</option>
+                        <option value="1">Février</option>
+                        <option value="2">Mars</option>
+                        <option value="3">Avril</option>
+                        <option value="4">Mai</option>
+                        <option value="5">Juin</option>
+                        <option value="6">Juillet</option>
+                        <option value="7">Août</option>
+                        <option value="8">Septembre</option>
+                        <option value="9">Octobre</option>
+                        <option value="10">Novembre</option>
+                        <option value="11">Décembre</option>
+                    </select>
+                    
+                    <label>Année :</label>
+                    <select id="billingYear" onchange="renderBilling()"></select>
+                </div>
+
+                <div id="billingContent"></div>
+            </div>
+
+            <!-- Coach Statistics Tab -->
+            <div id="coachStatsTab" class="tab-content">
+                <h2 style="margin-bottom: 20px; color: #667eea;">📊 Statistiques Coach</h2>
+                
+                <!-- Period Filter -->
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <label style="font-weight: 600; color: #333; margin-right: 15px;">Période d'analyse :</label>
+                    <select id="statsPeriodFilter" onchange="renderCoachStats()" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                        <option value="month" selected>Mois en cours</option>
+                        <option value="3months">3 derniers mois</option>
+                        <option value="6months">6 derniers mois</option>
+                        <option value="year">1 an</option>
+                        <option value="all">Tout</option>
+                    </select>
+                </div>
+
+                <!-- Stats Cards -->
+                <div id="statsCards"></div>
+
+                <!-- Charts -->
+                <div id="statsCharts" style="margin-top: 30px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div id="addClientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Ajouter un nouveau client</div>
+            <form id="addClientForm" onsubmit="saveClient(event)">
+                <div class="form-group">
+                    <label>Prénom et Nom</label>
+                    <input type="text" id="clientName" required placeholder="Ex: Marie Dupont">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn modal-btn-secondary" onclick="closeAddClientModal()">Annuler</button>
+                    <button type="submit" class="modal-btn modal-btn-primary">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Client Modal -->
+    <div id="editClientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Modifier le client</div>
+            <form id="editClientForm" onsubmit="saveClientEdit(event)">
+                <input type="hidden" id="editClientId">
+                <div class="form-group">
+                    <label>Prénom et Nom</label>
+                    <input type="text" id="editClientName" required placeholder="Ex: Marie Dupont">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn modal-btn-secondary" onclick="closeEditClientModal()">Annuler</button>
+                    <button type="submit" class="modal-btn modal-btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Manage Group Modal -->
+    <div id="manageCoupleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Gérer le groupe</div>
+            <div id="coupleModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Edit Session Modal -->
+    <div id="editSessionModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">Modifier la séance</div>
+            <div id="editSessionContent"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        // Predefined exercises list
+        const EXERCISES = [
+            'Squats',
+            'Squats sautés',
+            'Pompes',
+            'Pompes genoux',
+            'Sit-up',
+            'Planche',
+            'Gainage oblique',
+            'Pont fessiers',
+            'Burpees',
+            'Jumping-jack',
+            'Mountain climbers',
+            'Squats une jambe',
+            'Pédalo',
+            'Gainage superman',
+            'Fentes',
+            'Fentes marchées',
+            'Tirage',
+            'Développé militaire'
+        ];
+
+        // Google Drive configuration
+        // ⚠️ IMPORTANT: Remplace cette valeur par ton propre Client ID Google
+        const GOOGLE_CLIENT_ID = '582832705645-ka8tmp22ljfq26oknufk7kg5o32k37qf.apps.googleusercontent.com';
+        const GOOGLE_API_KEY = ''; // Optionnel, peut rester vide
+        const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+        const DRIVE_FILE_NAME = 'coach-tracker-data.json';
+        const TOKEN_STORAGE_KEY = 'googleDriveToken';
+        const TOKEN_EXPIRY_KEY = 'googleDriveTokenExpiry';
+        
+        let googleDriveConnected = false;
+        let googleAccessToken = null;
+        let driveFileId = null;
+
+        // Data structure
+        let clients = [];
+        let currentClientId = null;
+        let exerciseCounter = 0;
+
+        // Token Management Functions
+        
+        // Check if stored token is still valid
+        function checkStoredToken() {
+            const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+            const tokenExpiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
+            
+            if (storedToken && tokenExpiry) {
+                const expiryDate = new Date(tokenExpiry);
+                const now = new Date();
+                
+                // Check if token is still valid (with 5 min buffer)
+                if (expiryDate > now) {
+                    googleAccessToken = storedToken;
+                    googleDriveConnected = true;
+                    
+                    // Initialize Google Drive with stored token
+                    initializeGoogleDriveWithToken(storedToken);
+                    return true;
+                } else {
+                    // Token expired, clear it
+                    clearStoredToken();
+                }
+            }
+            
+            return false;
+        }
+
+        // Initialize Google Drive with existing token
+        function initializeGoogleDriveWithToken(token) {
+            gapi.load('client', () => {
+                gapi.client.init({
+                    apiKey: GOOGLE_API_KEY,
+                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
+                }).then(() => {
+                    gapi.client.setToken({ access_token: token });
+                    
+                    // Update UI
+                    document.getElementById('connectDriveBtn').style.display = 'none';
+                    document.getElementById('saveDriveBtn').style.display = 'block';
+                    document.getElementById('loadDriveBtn').style.display = 'block';
+                    
+                    // Try to find existing file
+                    findDriveFile();
+                }).catch(error => {
+                    console.error('Error initializing client with stored token:', error);
+                    // Clear invalid token
+                    clearStoredToken();
+                    googleDriveConnected = false;
+                    googleAccessToken = null;
+                });
+            });
+        }
+
+        // Store token with expiry
+        function storeToken(token) {
+            // Google tokens typically expire in 1 hour (3600 seconds)
+            const expiryDate = new Date();
+            expiryDate.setSeconds(expiryDate.getSeconds() + 3600); // 1 hour from now
+            
+            localStorage.setItem(TOKEN_STORAGE_KEY, token);
+            localStorage.setItem(TOKEN_EXPIRY_KEY, expiryDate.toISOString());
+        }
+
+        // Clear stored token
+        function clearStoredToken() {
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+            localStorage.removeItem(TOKEN_EXPIRY_KEY);
+        }
+
+        // Initialize app
+        function init() {
+            // Check for stored Google Drive token FIRST
+            checkStoredToken();
+            // Load data from localStorage
+            const savedClients = localStorage.getItem('coachClients');
+            if (savedClients) {
+                clients = JSON.parse(savedClients);
+                // Migrate old partnerId to groupId
+                migratePartnersToGroups();
+            }
+            
+            // Set today's date as default
+            document.getElementById('sessionDate').valueAsDate = new Date();
+            
+            // Initialize billing year selector
+            initBillingYearSelector();
+            
+            // Render clients
+            renderClients();
+        }
+
+        // Migrate old partner system to group system
+        function migratePartnersToGroups() {
+            let groupIdCounter = 1;
+            const processedClients = new Set();
+            
+            clients.forEach(client => {
+                if (client.partnerId && !client.groupId && !processedClients.has(client.id)) {
+                    const partner = clients.find(c => c.id === client.partnerId);
+                    if (partner && !partner.groupId) {
+                        const newGroupId = `group_${groupIdCounter++}`;
+                        client.groupId = newGroupId;
+                        partner.groupId = newGroupId;
+                        processedClients.add(client.id);
+                        processedClients.add(partner.id);
+                        delete client.partnerId;
+                        delete partner.partnerId;
+                    }
+                }
+            });
+            
+            if (processedClients.size > 0) {
+                saveData();
+            }
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tabName === 'clients') {
+                document.querySelector('.tab').classList.add('active');
+                document.getElementById('clientsTab').classList.add('active');
+            } else if (tabName === 'session') {
+                document.getElementById('sessionTab').classList.add('active');
+                document.getElementById('sessionTab-content').classList.add('active');
+            } else if (tabName === 'history') {
+                document.getElementById('historyTab').classList.add('active');
+                document.getElementById('historyTab-content').classList.add('active');
+            } else if (tabName === 'tracking') {
+                document.getElementById('trackingTab').classList.add('active');
+                document.getElementById('trackingTab-content').classList.add('active');
+                renderPersonalTracking();
+            } else if (tabName === 'performance') {
+                document.getElementById('performanceTab').classList.add('active');
+                document.getElementById('performanceTab-content').classList.add('active');
+                renderPerformanceData();
+            } else if (tabName === 'billing') {
+                document.querySelectorAll('.tab')[5].classList.add('active');
+                document.getElementById('billingTab').classList.add('active');
+                renderBilling();
+            } else if (tabName === 'coachStats') {
+                document.querySelectorAll('.tab')[6].classList.add('active');
+                document.getElementById('coachStatsTab').classList.add('active');
+                renderCoachStats();
+            }
+        }
+
+        // Render clients
+        function renderClients() {
+            const grid = document.getElementById('clientGrid');
+            grid.innerHTML = '';
+            
+            if (clients.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-state-icon">👤</div>
+                        <p>Aucun client pour le moment</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Cliquez sur "Ajouter un client" pour commencer</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            clients.forEach(client => {
+                const card = document.createElement('div');
+                card.className = 'client-card';
+                card.onclick = () => selectClient(client.id);
+                
+                const sessionsCount = client.sessions ? client.sessions.length : 0;
+                const lastSession = sessionsCount > 0 ? new Date(client.sessions[sessionsCount - 1].date).toLocaleDateString('fr-FR') : 'Aucune séance';
+                
+                const groupMembers = client.groupId ? clients.filter(c => c.groupId === client.groupId) : [];
+                const groupBadge = groupMembers.length > 1 ? `<span class="couple-badge">👥 (${groupMembers.length})</span>` : '';
+                
+                // Build manage group button HTML
+let manageGroupBtnHtml = '';
+if (clients.length > 1) {
+    const btnText = groupMembers.length > 1 ? 'Gérer le groupe' : 'Créer/rejoindre groupe';
+    manageGroupBtnHtml = `
+        <button class="manage-couple-btn" 
+                onclick="event.stopPropagation(); openManageGroupModal(${client.id});"
+                data-full-text="${btnText}">
+            ⚙️
+        </button>
+    `;
+}
+
+card.innerHTML = `
+    <div class="client-name">${client.name}${groupBadge}</div>
+    <div class="client-info">
+        ${sessionsCount} séance${sessionsCount > 1 ? 's' : ''}<br>
+        Dernière: ${lastSession}
+    </div>
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
+        <button class="delete-session-btn" onclick="editClient(event, ${client.id})" style="background: #3498db;" title="Modifier">
+            ✏️
+        </button>
+        <button class="delete-session-btn" onclick="deleteClient(event, ${client.id})" title="Supprimer">
+            🗑️
+        </button>
+    </div>
+    ${manageGroupBtnHtml}
+`;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Client modal
+        function openAddClientModal() {
+            document.getElementById('addClientModal').classList.add('active');
+            document.getElementById('clientName').value = '';
+        }
+
+        function closeAddClientModal() {
+            document.getElementById('addClientModal').classList.remove('active');
+        }
+
+        function saveClient(event) {
+            event.preventDefault();
+            const name = document.getElementById('clientName').value.trim();
+            
+            if (name) {
+                const newClient = {
+                    id: Date.now(),
+                    name: name,
+                    sessions: []
+                };
+                clients.push(newClient);
+                saveData();
+                renderClients();
+                closeAddClientModal();
+            }
+        }
+
+        // Edit client
+        function editClient(event, clientId) {
+            event.stopPropagation(); // Prevent card click
+            
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+            
+            document.getElementById('editClientId').value = client.id;
+            document.getElementById('editClientName').value = client.name;
+            document.getElementById('editClientModal').classList.add('active');
+        }
+
+        function saveClientEdit(event) {
+            event.preventDefault();
+            
+            const clientId = parseInt(document.getElementById('editClientId').value);
+            const client = clients.find(c => c.id === clientId);
+            
+            if (!client) return;
+            
+            const newName = document.getElementById('editClientName').value.trim();
+            
+            if (!newName) {
+                alert('Le nom ne peut pas être vide');
+                return;
+            }
+            
+            client.name = newName;
+            
+            saveData();
+            renderClients();
+            closeEditClientModal();
+            
+            alert(`✅ Client modifié avec succès !`);
+        }
+
+        function closeEditClientModal() {
+            document.getElementById('editClientModal').classList.remove('active');
+        }
+
+        // Delete client
+        function deleteClient(event, clientId) {
+            event.stopPropagation(); // Prevent card click
+            
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+            
+            const sessionsCount = client.sessions ? client.sessions.length : 0;
+            const confirmMessage = sessionsCount > 0 
+                ? `⚠️ Attention !\n\nVous allez supprimer "${client.name}" et toutes ses ${sessionsCount} séance(s).\n\nCette action est irréversible. Continuer ?`
+                : `Supprimer le client "${client.name}" ?`;
+            
+            if (!confirm(confirmMessage)) return;
+            
+            // Check if client is in a group
+            if (client.groupId) {
+                const groupMembers = clients.filter(c => c.groupId === client.groupId);
+                
+                // If only 2 members left, remove group for the other member
+                if (groupMembers.length === 2) {
+                    const otherMember = groupMembers.find(c => c.id !== clientId);
+                    if (otherMember) {
+                        delete otherMember.groupId;
+                    }
+                }
+            }
+            
+            // Remove client
+            clients = clients.filter(c => c.id !== clientId);
+            
+            saveData();
+            renderClients();
+            
+            alert(`✅ Client "${client.name}" supprimé avec succès.`);
+        }
+
+        // Select client
+        function selectClient(clientId) {
+            currentClientId = clientId;
+            const client = clients.find(c => c.id === clientId);
+            
+            document.getElementById('sessionClientName').textContent = client.name;
+            document.getElementById('historyClientName').textContent = client.name;
+            document.getElementById('trackingClientName').textContent = client.name;
+            document.getElementById('performanceClientName').textContent = client.name;
+            document.getElementById('sessionTab').style.display = 'block';
+            document.getElementById('historyTab').style.display = 'block';
+            document.getElementById('trackingTab').style.display = 'block';
+            document.getElementById('performanceTab').style.display = 'block';
+            
+            // Reset session form
+            document.getElementById('sessionForm').reset();
+            document.getElementById('sessionDate').valueAsDate = new Date();
+            document.getElementById('sessionDuration').value = 60; // Set default duration
+            document.getElementById('exerciseList').innerHTML = '';
+            exerciseCounter = 0;
+            
+            // Reset performance test form
+            document.getElementById('performanceTestForm').reset();
+            document.getElementById('testDate').valueAsDate = new Date();
+            
+            // Show group session option if client has group members
+            const groupCheckbox = document.getElementById('groupSessionCheckbox');
+            if (client.groupId) {
+                const groupMembers = clients.filter(c => c.groupId === client.groupId && c.id !== clientId);
+                if (groupMembers.length > 0) {
+                    groupCheckbox.style.display = 'block';
+                    document.getElementById('isGroupSession').checked = false;
+                    document.getElementById('groupParticipants').style.display = 'none';
+                    
+                    // Populate group participants
+                    const participantsDiv = document.getElementById('groupParticipants');
+                    participantsDiv.innerHTML = groupMembers.map(member => `
+                        <div class="group-participant">
+                            <input type="checkbox" id="participant_${member.id}" value="${member.id}" checked>
+                            <label for="participant_${member.id}">${member.name}</label>
+                        </div>
+                    `).join('');
+                } else {
+                    groupCheckbox.style.display = 'none';
+                }
+            } else {
+                groupCheckbox.style.display = 'none';
+            }
+            
+            // Initialize ratings for solo session (only current client)
+            renderRatingsForParticipants([clientId]);
+            
+            // Load history
+            renderHistory();
+            
+            // Switch to session tab
+            switchTab('session');
+        }
+
+        // Toggle group participants visibility
+        function toggleGroupParticipants() {
+            const isGroup = document.getElementById('isGroupSession').checked;
+            const participantsDiv = document.getElementById('groupParticipants');
+            participantsDiv.style.display = isGroup ? 'block' : 'none';
+            
+            // Update ratings display
+            if (isGroup) {
+                updateRatingsForSelectedParticipants();
+            } else {
+                renderRatingsForParticipants([currentClientId]);
+            }
+        }
+
+        // Update ratings when participants selection changes
+        function updateRatingsForSelectedParticipants() {
+            const participantIds = [currentClientId]; // Always include main client
+            
+            if (document.getElementById('isGroupSession') && document.getElementById('isGroupSession').checked) {
+                const checkboxes = document.querySelectorAll('#groupParticipants input[type="checkbox"]:checked');
+                checkboxes.forEach(cb => participantIds.push(parseInt(cb.value)));
+            }
+            
+            renderRatingsForParticipants(participantIds);
+        }
+
+        // Render ratings for multiple participants
+        function renderRatingsForParticipants(participantIds) {
+            const container = document.getElementById('ratingsForParticipants');
+            const uniqueIds = [...new Set(participantIds)];
+            
+            container.innerHTML = '<div class="ratings-columns">' + uniqueIds.map(id => {
+                const client = clients.find(c => c.id === id);
+                return `
+                    <div class="participant-ratings">
+                        <h4>${client.name}</h4>
+                        <div class="rating-row">
+                            <label>Difficulté musculaire</label>
+                            <div class="rating-scale" id="muscularDifficulty_${id}"></div>
+                        </div>
+                        <div class="rating-row">
+                            <label>Difficulté cardio</label>
+                            <div class="rating-scale" id="cardioDifficulty_${id}"></div>
+                        </div>
+                        <div class="rating-row">
+                            <label>Niveau de fatigue</label>
+                            <div class="rating-scale" id="fatigueLevel_${id}"></div>
+                        </div>
+                        <div class="rating-row">
+                            <label>Qualité du sommeil</label>
+                            <div class="rating-scale" id="sleepQuality_${id}"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('') + '</div>';
+            
+            // Initialize rating buttons
+            uniqueIds.forEach(id => {
+                ['muscularDifficulty', 'cardioDifficulty', 'fatigueLevel', 'sleepQuality'].forEach(type => {
+                    const scaleDiv = document.getElementById(`${type}_${id}`);
+                    for (let i = 1; i <= 10; i++) {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'rating-button';
+                        btn.textContent = i;
+                        btn.onclick = () => selectRating(`${type}_${id}`, i);
+                        scaleDiv.appendChild(btn);
+                    }
+                });
+            });
+        }
+
+        // Select rating (new version)
+        function selectRating(scaleId, value) {
+            const scale = document.getElementById(scaleId);
+            if (!scale) return;
+            const buttons = scale.querySelectorAll('.rating-button');
+            buttons.forEach((btn, index) => {
+                if (index + 1 === value) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+        }
+
+        // Get rating value (new version)
+        function getRating(scaleId) {
+            const scale = document.getElementById(scaleId);
+            if (!scale) return null;
+            const selected = scale.querySelector('.rating-button.selected');
+            return selected ? parseInt(selected.textContent) : null;
+        }
+
+        // Add event listeners to participant checkboxes
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('#groupParticipants input[type="checkbox"]')) {
+                updateRatingsForSelectedParticipants();
+            }
+        });
+
+        // Back to clients
+        function backToClients() {
+            currentClientId = null;
+            document.getElementById('sessionTab').style.display = 'none';
+            document.getElementById('historyTab').style.display = 'none';
+            document.getElementById('trackingTab').style.display = 'none';
+            document.getElementById('performanceTab').style.display = 'none';
+            switchTab('clients');
+        }
+
+        // Add exercise
+        function addExercise() {
+            exerciseCounter++;
+            const exerciseList = document.getElementById('exerciseList');
+            const exerciseItem = document.createElement('div');
+            exerciseItem.className = 'exercise-item';
+            exerciseItem.id = `exercise-${exerciseCounter}`;
+            
+            const exerciseOptions = EXERCISES.map(ex => `<option value="${ex}">${ex}</option>`).join('');
+            
+            exerciseItem.innerHTML = `
+                <div class="exercise-header">
+                    <select class="exercise-name" required onchange="prefillExerciseData(this, 'exercise-${exerciseCounter}')">
+                        <option value="">Choisir un exercice</option>
+                        ${exerciseOptions}
+                    </select>
+                    <button type="button" class="remove-exercise" onclick="removeExercise('exercise-${exerciseCounter}')">Supprimer</button>
+                </div>
+                <div class="exercise-details">
+                    <div class="exercise-input">
+                        <label>Séries</label>
+                        <input type="number" class="exercise-sets" min="1" required>
+                    </div>
+                    <div class="exercise-input">
+                        <label>Répétitions</label>
+                        <input type="number" class="exercise-reps" min="1">
+                    </div>
+                    <div class="exercise-input">
+                        <label>Charge (kg)</label>
+                        <input type="number" class="exercise-weight" min="0" step="0.5">
+                    </div>
+                    <div class="exercise-input">
+                        <label>Temps (sec)</label>
+                        <input type="number" class="exercise-time" min="0">
+                    </div>
+                </div>
+            `;
+            
+            exerciseList.appendChild(exerciseItem);
+        }
+
+        // Prefill exercise data with last values
+        function prefillExerciseData(selectElement, exerciseItemId) {
+            const exerciseName = selectElement.value;
+            if (!exerciseName) return;
+            
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client || !client.sessions) return;
+            
+            // Find last occurrence of this exercise in client's sessions
+            let lastExerciseData = null;
+            
+            // Sort sessions by date (most recent first)
+            const sortedSessions = [...client.sessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Search through sessions
+            for (const session of sortedSessions) {
+                if (session.exercises) {
+                    const foundExercise = session.exercises.find(ex => ex.name === exerciseName);
+                    if (foundExercise) {
+                        lastExerciseData = foundExercise;
+                        break;
+                    }
+                }
+            }
+            
+            // Prefill fields if data found
+            if (lastExerciseData) {
+                const exerciseItem = document.getElementById(exerciseItemId);
+                if (exerciseItem) {
+                    const setsInput = exerciseItem.querySelector('.exercise-sets');
+                    const repsInput = exerciseItem.querySelector('.exercise-reps');
+                    const weightInput = exerciseItem.querySelector('.exercise-weight');
+                    const timeInput = exerciseItem.querySelector('.exercise-time');
+                    
+                    if (lastExerciseData.sets) setsInput.value = lastExerciseData.sets;
+                    if (lastExerciseData.reps) repsInput.value = lastExerciseData.reps;
+                    if (lastExerciseData.weight) weightInput.value = lastExerciseData.weight;
+                    if (lastExerciseData.time) timeInput.value = lastExerciseData.time;
+                }
+            }
+        }
+
+        // Remove exercise
+        function removeExercise(exerciseId) {
+            document.getElementById(exerciseId).remove();
+        }
+
+        // Save session
+        function saveSession(event) {
+            event.preventDefault();
+            
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client) return;
+            
+            // Collect exercise data
+            const exercises = [];
+            const exerciseItems = document.querySelectorAll('.exercise-item');
+            exerciseItems.forEach(item => {
+                const name = item.querySelector('.exercise-name').value;
+                const sets = item.querySelector('.exercise-sets').value;
+                const reps = item.querySelector('.exercise-reps').value;
+                const weight = item.querySelector('.exercise-weight').value;
+                const time = item.querySelector('.exercise-time').value;
+                
+                if (name) {
+                    exercises.push({
+                        name,
+                        sets: parseInt(sets),
+                        reps: reps ? parseInt(reps) : null,
+                        weight: weight ? parseFloat(weight) : null,
+                        time: time ? parseInt(time) : null
+                    });
+                }
+            });
+            
+            
+            
+            // Determine participants
+            const participantIds = [currentClientId];
+            const isGroup = document.getElementById('isGroupSession') && document.getElementById('isGroupSession').checked;
+            
+            if (isGroup) {
+                const checkboxes = document.querySelectorAll('#groupParticipants input[type="checkbox"]:checked');
+                checkboxes.forEach(cb => participantIds.push(parseInt(cb.value)));
+            }
+            
+            // Collect ratings for each participant
+            const participantRatings = {};
+            participantIds.forEach(id => {
+                participantRatings[id] = {
+                    muscular: getRating(`muscularDifficulty_${id}`),
+                    cardio: getRating(`cardioDifficulty_${id}`),
+                    fatigue: getRating(`fatigueLevel_${id}`),
+                    sleep: getRating(`sleepQuality_${id}`)
+                };
+            });
+            
+            const sessionId = Date.now();
+            const sessionData = {
+                id: sessionId,
+                date: document.getElementById('sessionDate').value,
+                duration: parseInt(document.getElementById('sessionDuration').value),
+                exercises: exercises,
+                notes: document.getElementById('sessionNotes').value,
+                isGroup: participantIds.length > 1,
+                participants: participantIds,
+                mainClientId: currentClientId,
+                participantRatings: participantRatings
+            };
+            
+            // Add session to all participants
+            participantIds.forEach(participantId => {
+                const participant = clients.find(c => c.id === participantId);
+                if (participant) {
+                    if (!participant.sessions) {
+                        participant.sessions = [];
+                    }
+                    participant.sessions.push({...sessionData});
+                }
+            });
+            
+            // Save and update
+            saveData();
+            renderClients();
+            
+            // Switch to history
+            renderHistory();
+            switchTab('history');
+            
+            // Show success message
+            const message = participantIds.length > 1 
+                ? `Séance de groupe enregistrée pour ${participantIds.length} participant(s) !` 
+                : 'Séance enregistrée avec succès !';
+            alert(message);
+        }
+
+        // Render history
+        function renderHistory() {
+            const client = clients.find(c => c.id === currentClientId);
+            const historyDiv = document.getElementById('sessionHistory');
+            
+            if (!client || !client.sessions || client.sessions.length === 0) {
+                historyDiv.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Aucune séance enregistrée</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort sessions by date (most recent first)
+            const sortedSessions = [...client.sessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            historyDiv.innerHTML = sortedSessions.map(session => {
+                const exercisesHtml = session.exercises.map(ex => {
+                    let details = `${ex.sets} série${ex.sets > 1 ? 's' : ''}`;
+                    if (ex.reps) details += ` × ${ex.reps} reps`;
+                    if (ex.weight) details += ` • ${ex.weight} kg`;
+                    if (ex.time) details += ` • ${ex.time}s`;
+                    
+                    return `
+                        <div class="session-exercise">
+                            <strong>${ex.name}</strong> - ${details}
+                        </div>
+                    `;
+                }).join('');
+                
+                const date = new Date(session.date).toLocaleDateString('fr-FR', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                
+                // Get group badge if group session
+                let groupBadge = '';
+                if (session.isGroup && session.participants && session.participants.length > 1) {
+                    const participantNames = session.participants
+                        .map(id => clients.find(c => c.id === id)?.name)
+                        .filter(name => name)
+                        .join(', ');
+                    const sessionType = session.participants.length === 2 ? 'Duo' : 'Trio';
+                    groupBadge = `<span class="session-duo-badge">👥 ${sessionType}: ${participantNames}</span>`;
+                }
+                
+                // Ratings display - show ratings for current client
+                const clientRatings = session.participantRatings && session.participantRatings[currentClientId] 
+                    ? session.participantRatings[currentClientId]
+                    : session.ratings || {}; // Fallback for old format
+                
+                const ratingsHtml = `
+                    <div class="session-ratings">
+                        ${clientRatings.muscular ? `<div class="rating-item">💪 Difficulté musculaire: <span class="rating-value">${clientRatings.muscular}/10</span></div>` : ''}
+                        ${clientRatings.cardio ? `<div class="rating-item">❤️ Difficulté cardio: <span class="rating-value">${clientRatings.cardio}/10</span></div>` : ''}
+                        ${clientRatings.fatigue ? `<div class="rating-item">😴 Fatigue: <span class="rating-value">${clientRatings.fatigue}/10</span></div>` : ''}
+                        ${clientRatings.sleep ? `<div class="rating-item">🌙 Sommeil: <span class="rating-value">${clientRatings.sleep}/10</span></div>` : ''}
+                    </div>
+                `;
+                
+                return `
+                    <div class="session-card">
+                        <div class="session-header">
+                            <span class="session-date">${date}${groupBadge}</span>
+                            <div>
+                                <span class="session-duration">${session.duration} minutes</span>
+                                <button class="edit-session-btn" onclick="editSession(${session.id})">✏️ Modifier</button>
+                                <button class="delete-session-btn" onclick="deleteSession(${session.id})">🗑️ Supprimer</button>
+                            </div>
+                        </div>
+                        <div class="session-exercises">
+                            ${exercisesHtml}
+                        </div>
+                        ${ratingsHtml}
+                        ${session.notes ? `<div class="session-notes"><strong>Notes:</strong> ${session.notes}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('coachClients', JSON.stringify(clients));
+        }
+
+        // Edit Session
+        function editSession(sessionId) {
+            const client = clients.find(c => c.id === currentClientId);
+            const session = client.sessions.find(s => s.id === sessionId);
+            if (!session) return;
+            
+            const modal = document.getElementById('editSessionModal');
+            const content = document.getElementById('editSessionContent');
+            
+            // Build exercises HTML
+            const exercisesHtml = session.exercises.map((ex, index) => {
+                const exerciseOptions = EXERCISES.map(e => 
+                    `<option value="${e}" ${e === ex.name ? 'selected' : ''}>${e}</option>`
+                ).join('');
+                
+                return `
+                    <div class="exercise-item" id="edit-exercise-${index}">
+                        <div class="exercise-header">
+                            <select class="exercise-name" required>
+                                ${exerciseOptions}
+                            </select>
+                            <button type="button" class="remove-exercise" onclick="document.getElementById('edit-exercise-${index}').remove()">Supprimer</button>
+                        </div>
+                        <div class="exercise-details">
+                            <div class="exercise-input">
+                                <label>Séries</label>
+                                <input type="number" class="exercise-sets" min="1" value="${ex.sets}" required>
+                            </div>
+                            <div class="exercise-input">
+                                <label>Répétitions</label>
+                                <input type="number" class="exercise-reps" min="1" value="${ex.reps || ''}">
+                            </div>
+                            <div class="exercise-input">
+                                <label>Charge (kg)</label>
+                                <input type="number" class="exercise-weight" min="0" step="0.5" value="${ex.weight || ''}">
+                            </div>
+                            <div class="exercise-input">
+                                <label>Temps (sec)</label>
+                                <input type="number" class="exercise-time" min="0" value="${ex.time || ''}">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Build ratings HTML for each participant
+            const participants = session.participants || [currentClientId];
+            const ratingsHtml = '<div class="ratings-columns">' + participants.map(participantId => {
+                const participant = clients.find(c => c.id === participantId);
+                const ratings = session.participantRatings && session.participantRatings[participantId] 
+                    ? session.participantRatings[participantId]
+                    : (participantId === currentClientId && session.ratings ? session.ratings : {});
+                
+                return `
+                    <div class="participant-ratings">
+                        <h4>${participant.name}</h4>
+                        ${['muscular', 'cardio', 'fatigue', 'sleep'].map(type => {
+                            const labels = {
+                                muscular: 'Difficulté musculaire',
+                                cardio: 'Difficulté cardio',
+                                fatigue: 'Niveau de fatigue',
+                                sleep: 'Qualité du sommeil'
+                            };
+                            const value = ratings[type] || '';
+                            return `
+                                <div class="rating-row">
+                                    <label>${labels[type]}</label>
+                                    <div class="rating-scale" id="edit_${type}_${participantId}">
+                                        ${Array.from({length: 10}, (_, i) => i + 1).map(num => 
+                                            `<button type="button" class="rating-button ${num == value ? 'selected' : ''}" onclick="selectRating('edit_${type}_${participantId}', ${num})">${num}</button>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }).join('') + '</div>';
+            
+            content.innerHTML = `
+                <form id="editSessionForm" onsubmit="saveEditedSession(event, ${sessionId})">
+                    <div class="form-group">
+                        <label>Date de la séance</label>
+                        <input type="date" id="editSessionDate" value="${session.date}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Durée (minutes)</label>
+                        <input type="number" id="editSessionDuration" value="${session.duration}" min="1" required>
+                    </div>
+                    <h3 style="margin: 20px 0 10px 0;">Exercices</h3>
+                    <div id="editExerciseList">${exercisesHtml}</div>
+                    <h3 style="margin: 20px 0 10px 0;">Indicateurs</h3>
+                    ${ratingsHtml}
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>Notes</label>
+                        <textarea id="editSessionNotes">${session.notes || ''}</textarea>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" class="modal-btn modal-btn-secondary" onclick="closeEditSessionModal()">Annuler</button>
+                        <button type="submit" class="modal-btn modal-btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function closeEditSessionModal() {
+            document.getElementById('editSessionModal').classList.remove('active');
+        }
+
+        function saveEditedSession(event, sessionId) {
+            event.preventDefault();
+            
+            const client = clients.find(c => c.id === currentClientId);
+            const sessionIndex = client.sessions.findIndex(s => s.id === sessionId);
+            if (sessionIndex === -1) return;
+            
+            const session = client.sessions[sessionIndex];
+            
+            // Collect exercises
+            const exercises = [];
+            const exerciseItems = document.querySelectorAll('#editExerciseList .exercise-item');
+            exerciseItems.forEach(item => {
+                const name = item.querySelector('.exercise-name').value;
+                const sets = item.querySelector('.exercise-sets').value;
+                const reps = item.querySelector('.exercise-reps').value;
+                const weight = item.querySelector('.exercise-weight').value;
+                const time = item.querySelector('.exercise-time').value;
+                
+                if (name) {
+                    exercises.push({
+                        name,
+                        sets: parseInt(sets),
+                        reps: reps ? parseInt(reps) : null,
+                        weight: weight ? parseFloat(weight) : null,
+                        time: time ? parseInt(time) : null
+                    });
+                }
+            });
+            
+            if (exercises.length === 0) {
+                alert('Ajoutez au moins un exercice');
+                return;
+            }
+            
+            // Collect ratings for each participant
+            const participants = session.participants || [currentClientId];
+            const participantRatings = {};
+            participants.forEach(participantId => {
+                participantRatings[participantId] = {
+                    muscular: getRating(`edit_muscular_${participantId}`),
+                    cardio: getRating(`edit_cardio_${participantId}`),
+                    fatigue: getRating(`edit_fatigue_${participantId}`),
+                    sleep: getRating(`edit_sleep_${participantId}`)
+                };
+            });
+            
+            // Update session
+            session.date = document.getElementById('editSessionDate').value;
+            session.duration = parseInt(document.getElementById('editSessionDuration').value);
+            session.exercises = exercises;
+            session.participantRatings = participantRatings;
+            session.notes = document.getElementById('editSessionNotes').value;
+            
+            // Update session in all participants
+            if (session.participants && session.participants.length > 1) {
+                session.participants.forEach(participantId => {
+                    if (participantId !== currentClientId) {
+                        const otherClient = clients.find(c => c.id === participantId);
+                        if (otherClient && otherClient.sessions) {
+                            const otherSessionIndex = otherClient.sessions.findIndex(s => s.id === sessionId);
+                            if (otherSessionIndex !== -1) {
+                                otherClient.sessions[otherSessionIndex] = {...session};
+                            }
+                        }
+                    }
+                });
+            }
+            
+            saveData();
+            renderHistory();
+            closeEditSessionModal();
+            alert('Séance modifiée avec succès !');
+        }
+
+        // Delete Session
+        function deleteSession(sessionId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette séance ?')) return;
+            
+            const client = clients.find(c => c.id === currentClientId);
+            const session = client.sessions.find(s => s.id === sessionId);
+            
+            // Remove from current client
+            client.sessions = client.sessions.filter(s => s.id !== sessionId);
+            
+            // Remove from all participants if group session
+            if (session && session.participants && session.participants.length > 1) {
+                session.participants.forEach(participantId => {
+                    if (participantId !== currentClientId) {
+                        const otherClient = clients.find(c => c.id === participantId);
+                        if (otherClient && otherClient.sessions) {
+                            otherClient.sessions = otherClient.sessions.filter(s => s.id !== sessionId);
+                        }
+                    }
+                });
+            }
+            
+            saveData();
+            renderClients();
+            renderHistory();
+            alert('Séance supprimée avec succès !');
+        }
+
+        // Group Management
+        function openManageGroupModal(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            const modal = document.getElementById('manageCoupleModal');
+            const content = document.getElementById('coupleModalContent');
+            
+            if (client.groupId) {
+                // Client already in a group
+                const groupMembers = clients.filter(c => c.groupId === client.groupId);
+                const membersList = groupMembers.map(m => `<li>${m.name}</li>`).join('');
+                
+                content.innerHTML = `
+                    <p style="margin-bottom: 15px;">
+                        <strong>${client.name}</strong> fait partie d'un groupe de ${groupMembers.length} personne(s) :
+                    </p>
+                    <ul style="margin: 15px 0; padding-left: 25px;">
+                        ${membersList}
+                    </ul>
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-secondary" onclick="closeManageCoupleModal()">Fermer</button>
+                        <button class="modal-btn modal-btn-primary" style="background: #ff4757;" onclick="leaveGroup(${clientId})">Retirer du groupe</button>
+                    </div>
+                `;
+            } else {
+                // Not in a group - can join existing or create new
+                const existingGroups = {};
+                clients.forEach(c => {
+                    if (c.groupId && c.id !== clientId) {
+                        if (!existingGroups[c.groupId]) {
+                            existingGroups[c.groupId] = [];
+                        }
+                        existingGroups[c.groupId].push(c.name);
+                    }
+                });
+                
+                const groupOptions = Object.keys(existingGroups).map(groupId => 
+                    `<option value="${groupId}">Rejoindre: ${existingGroups[groupId].join(', ')}</option>`
+                ).join('');
+                
+                const availableClients = clients.filter(c => c.id !== clientId && !c.groupId);
+                const clientOptions = availableClients.map(c => 
+                    `<option value="${c.id}">${c.name}</option>`
+                ).join('');
+                
+                content.innerHTML = `
+                    <div class="form-group">
+                        <label>Rejoindre un groupe existant</label>
+                        <select id="existingGroupSelect">
+                            <option value="">Choisir un groupe...</option>
+                            ${groupOptions}
+                        </select>
+                    </div>
+                    ${availableClients.length > 0 ? `
+                        <p style="text-align: center; margin: 20px 0; color: #999;">- OU -</p>
+                        <div class="form-group">
+                            <label>Créer un nouveau groupe avec</label>
+                            <select id="newGroupClientSelect" multiple size="3" style="height: auto;">
+                                ${clientOptions}
+                            </select>
+                            <small style="color: #666; display: block; margin-top: 5px;">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs clients</small>
+                        </div>
+                    ` : '<p style="color: #999; margin-top: 15px;">Aucun autre client disponible pour créer un nouveau groupe.</p>'}
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-secondary" onclick="closeManageCoupleModal()">Annuler</button>
+                        <button class="modal-btn modal-btn-primary" onclick="joinOrCreateGroup(${clientId})">Valider</button>
+                    </div>
+                `;
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeManageCoupleModal() {
+            document.getElementById('manageCoupleModal').classList.remove('active');
+        }
+
+        function joinOrCreateGroup(clientId) {
+            const existingGroup = document.getElementById('existingGroupSelect')?.value;
+            const newGroupClients = document.getElementById('newGroupClientSelect');
+            const selectedClients = newGroupClients ? Array.from(newGroupClients.selectedOptions).map(opt => parseInt(opt.value)) : [];
+            
+            const client = clients.find(c => c.id === clientId);
+            
+            if (existingGroup) {
+                // Join existing group
+                client.groupId = existingGroup;
+                saveData();
+                renderClients();
+                closeManageCoupleModal();
+                alert(`${client.name} a rejoint le groupe !`);
+            } else if (selectedClients.length > 0) {
+                // Create new group
+                const newGroupId = `group_${Date.now()}`;
+                client.groupId = newGroupId;
+                selectedClients.forEach(id => {
+                    const member = clients.find(c => c.id === id);
+                    if (member) member.groupId = newGroupId;
+                });
+                saveData();
+                renderClients();
+                closeManageCoupleModal();
+                alert(`Nouveau groupe créé avec ${selectedClients.length + 1} personne(s) !`);
+            } else {
+                alert('Veuillez sélectionner un groupe ou des clients pour créer un groupe');
+            }
+        }
+
+        function leaveGroup(clientId) {
+            if (!confirm('Êtes-vous sûr de vouloir retirer ce client du groupe ? Les séances de groupe existantes seront conservées.')) return;
+            
+            const client = clients.find(c => c.id === clientId);
+            const groupId = client.groupId;
+            
+            delete client.groupId;
+            
+            // Check if group is now empty or has only one member
+            const remainingMembers = clients.filter(c => c.groupId === groupId);
+            if (remainingMembers.length === 1) {
+                // Remove group from last member too
+                delete remainingMembers[0].groupId;
+            }
+            
+            saveData();
+            renderClients();
+            closeManageCoupleModal();
+            alert('Client retiré du groupe !');
+        }
+
+        // Billing Functions
+        function initBillingYearSelector() {
+            const yearSelect = document.getElementById('billingYear');
+            const currentYear = new Date().getFullYear();
+            
+            // Add years from 2020 to current year + 1
+            for (let year = 2020; year <= currentYear + 1; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                if (year === currentYear) {
+                    option.selected = true;
+                }
+                yearSelect.appendChild(option);
+            }
+            
+            // Set current month
+            document.getElementById('billingMonth').value = new Date().getMonth();
+        }
+
+        function renderBilling() {
+            const month = parseInt(document.getElementById('billingMonth').value);
+            const year = parseInt(document.getElementById('billingYear').value);
+            const content = document.getElementById('billingContent');
+            
+            if (clients.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💰</div>
+                        <p>Aucun client à facturer</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate sessions for each client
+            const clientData = clients.map(client => {
+                const sessions = client.sessions || [];
+                const monthSessions = sessions.filter(s => {
+                    const sessionDate = new Date(s.date);
+                    return sessionDate.getMonth() === month && sessionDate.getFullYear() === year;
+                });
+                
+                const soloSessions = monthSessions.filter(s => !s.isGroup || (s.participants && s.participants.length === 1)).length;
+                const duoSessions = monthSessions.filter(s => s.isGroup && s.participants && s.participants.length === 2).length;
+                const trioSessions = monthSessions.filter(s => s.isGroup && s.participants && s.participants.length >= 3).length;
+                const totalSessions = monthSessions.length;
+                
+                // Get unique group session IDs (to avoid counting same session multiple times in group total)
+                const groupSessionIds = new Set(
+                    monthSessions.filter(s => s.isGroup).map(s => s.id)
+                );
+                
+                return {
+                    id: client.id,
+                    name: client.name,
+                    groupId: client.groupId,
+                    soloSessions,
+                    duoSessions,
+                    trioSessions,
+                    totalSessions,
+                    groupSessionIds: Array.from(groupSessionIds)
+                };
+            });
+            
+            // Organize by groups
+            const groups = {};
+            const soloClients = [];
+            
+            clientData.forEach(client => {
+                if (client.totalSessions === 0) return; // Skip clients with no sessions
+                
+                if (client.groupId) {
+                    if (!groups[client.groupId]) {
+                        groups[client.groupId] = [];
+                    }
+                    groups[client.groupId].push(client);
+                } else {
+                    soloClients.push(client);
+                }
+            });
+            
+            if (Object.keys(groups).length === 0 && soloClients.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>Aucune séance enregistrée pour ce mois</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+                              'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+            
+            let tableRows = '';
+            let grandTotalSolo = 0;
+            let grandTotalDuo = 0;
+            let grandTotalTrio = 0;
+            let grandTotal = 0;
+            
+            // Add groups
+            Object.keys(groups).forEach(groupId => {
+                const groupMembers = groups[groupId];
+                const groupNames = groupMembers.map(m => m.name).join(', ');
+                
+                // Calculate group totals (avoiding double-counting group sessions)
+                const allGroupSessionIds = new Set();
+                groupMembers.forEach(member => {
+                    member.groupSessionIds.forEach(id => allGroupSessionIds.add(id));
+                });
+                
+                const groupTotalSolo = groupMembers.reduce((sum, m) => sum + m.soloSessions, 0);
+                const groupTotalDuo = allGroupSessionIds.size > 0 ? 
+                    Math.max(...groupMembers.map(m => m.duoSessions)) : 0;
+                const groupTotalTrio = allGroupSessionIds.size > 0 ? 
+                    Math.max(...groupMembers.map(m => m.trioSessions)) : 0;
+                const groupTotal = groupTotalSolo + allGroupSessionIds.size;
+                
+                
+                // Group header - CLIQUABLE AVEC SOUS-TOTAL
+    tableRows += `
+        <tr class="billing-group-header" onclick="toggleGroup('${groupId}')" style="cursor: pointer;">
+            <td>
+                <span id="icon-${groupId}">▼</span> 
+                <strong>👥 Groupe: ${groupNames}</strong>
+            </td>
+            <td style="text-align: center;">${groupTotalSolo}</td>
+            <td style="text-align: center;">${groupTotalDuo}</td>
+            <td style="text-align: center;">${groupTotalTrio}</td>
+            <td style="text-align: center;"><span class="billing-total">${groupTotal}</span></td>
+        </tr>
+    `;
+    
+    // Individual members - DÉTAILS PLIABLES
+    groupMembers.forEach(member => {
+        tableRows += `
+            <tr class="group-detail group-${groupId}">
+                <td class="billing-group-member">${member.name}</td>
+                <td style="text-align: center;">${member.soloSessions}</td>
+                <td style="text-align: center;">${member.duoSessions}</td>
+                <td style="text-align: center;">${member.trioSessions}</td>
+                <td style="text-align: center;">${member.totalSessions}</td>
+            </tr>
+        `;
+    });
+    
+    grandTotalSolo += groupTotalSolo;
+    grandTotalDuo += groupTotalDuo;
+    grandTotalTrio += groupTotalTrio;
+    grandTotal += groupTotal;
+});
+                
+              
+            
+            // Add solo clients
+            soloClients.forEach(client => {
+                tableRows += `
+                    <tr>
+                        <td><strong>${client.name}</strong></td>
+                        <td style="text-align: center;">${client.soloSessions}</td>
+                        <td style="text-align: center;">${client.duoSessions}</td>
+                        <td style="text-align: center;">${client.trioSessions}</td>
+                        <td style="text-align: center;"><span class="billing-total">${client.totalSessions}</span></td>
+                    </tr>
+                `;
+                
+                grandTotalSolo += client.soloSessions;
+                grandTotalDuo += client.duoSessions;
+                grandTotalTrio += client.trioSessions;
+                grandTotal += client.totalSessions;
+            });
+            
+            content.innerHTML = `
+                <h3 style="margin-bottom: 20px; color: #333;">
+                    Récapitulatif : ${monthNames[month]} ${year}
+                </h3>
+                <table class="billing-table">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th style="text-align: center;">Séances Solo</th>
+                            <th style="text-align: center;">Séances Duo</th>
+                            <th style="text-align: center;">Séances Trio</th>
+                            <th style="text-align: center;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                        <tr style="background: #667eea; color: white; font-weight: 600;">
+                            <td><strong>TOTAL GLOBAL</strong></td>
+                            <td style="text-align: center;">${grandTotalSolo}</td>
+                            <td style="text-align: center;">${grandTotalDuo}</td>
+                            <td style="text-align: center;">${grandTotalTrio}</td>
+                            <td style="text-align: center; font-size: 18px;">${grandTotal}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+                    <p style="color: #856404; font-size: 14px; margin: 0;">
+                        💡 <strong>Note importante:</strong> Les séances de groupe (duo/trio) ne sont comptées qu'une seule fois dans les sous-totaux des groupes, même si plusieurs membres y ont participé. Cela évite la double facturation.
+                    </p>
+                </div>
+            `;
+			// Replier tous les groupes au chargement
+Object.keys(groups).forEach(groupId => {
+    const groupRows = document.querySelectorAll(`.group-${groupId}`);
+    const icon = document.getElementById(`icon-${groupId}`);
+    groupRows.forEach(row => row.style.display = 'none');
+    if (icon) icon.textContent = '▶';
+});
+        }
+
+			// Toggle group visibility in billing table
+			function toggleGroup(groupId) {
+				const groupRows = document.querySelectorAll(`.group-${groupId}`);
+				const icon = document.getElementById(`icon-${groupId}`);
+    
+				const isVisible = groupRows[0].style.display !== 'none';
+    
+				groupRows.forEach(row => {
+					row.style.display = isVisible ? 'none' : 'table-row';
+				});
+    
+				// Change icon
+				icon.textContent = isVisible ? '▶' : '▼';
+			}
+
+        // Export/Import and Google Drive Functions
+        
+        // Export data to JSON file
+        function exportData() {
+            const dataToExport = {
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+                clients: clients
+            };
+            
+            const dataStr = JSON.stringify(dataToExport, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            const dateStr = new Date().toISOString().split('T')[0];
+            link.download = `coach-tracker-backup-${dateStr}.json`;
+            link.click();
+            
+            alert('✅ Données exportées avec succès !');
+        }
+        
+        // Import data from JSON file
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (!importedData.clients) {
+                        alert('❌ Fichier invalide : format non reconnu');
+                        return;
+                    }
+                    
+                    if (clients.length > 0) {
+                        if (!confirm('⚠️ Attention : Cette action va remplacer toutes vos données actuelles. Êtes-vous sûr ?')) {
+                            return;
+                        }
+                    }
+                    
+                    clients = importedData.clients;
+                    saveData();
+                    renderClients();
+                    
+                    alert(`✅ Données importées avec succès !\n${clients.length} client(s) chargé(s)`);
+                    
+                } catch (error) {
+                    alert('❌ Erreur lors de l\'import : fichier corrompu ou invalide');
+                    console.error(error);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+        
+        // Export monthly backup with billing data
+        function exportMonthlyBackup() {
+            const month = parseInt(document.getElementById('billingMonth').value);
+            const year = parseInt(document.getElementById('billingYear').value);
+            const monthNames = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 
+                              'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
+            
+            const backupData = {
+                version: '1.0',
+                backupType: 'monthly',
+                month: month + 1,
+                year: year,
+                exportDate: new Date().toISOString(),
+                clients: clients,
+                billingMonth: month,
+                billingYear: year
+            };
+            
+            const dataStr = JSON.stringify(backupData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `coach-tracker-backup-${year}-${monthNames[month]}.json`;
+            link.click();
+            
+            alert(`✅ Backup créé pour ${monthNames[month]} ${year} !`);
+        }
+        
+        // Google Drive Functions
+        function connectGoogleDrive() {
+            if (GOOGLE_CLIENT_ID === 'TON_CLIENT_ID.apps.googleusercontent.com') {
+                alert('⚠️ Configuration requise !\n\nPour utiliser Google Drive, vous devez :\n\n1. Créer un projet sur Google Cloud Console\n2. Activer l\'API Google Drive\n3. Créer des identifiants OAuth 2.0\n4. Remplacer GOOGLE_CLIENT_ID dans le code\n\nInstructions complètes fournies par le développeur.');
+                return;
+            }
+            
+            // Initialize Google Identity Services
+            const client = google.accounts.oauth2.initTokenClient({
+                client_id: GOOGLE_CLIENT_ID,
+                scope: GOOGLE_SCOPES,
+                callback: (tokenResponse) => {
+                    if (tokenResponse.access_token) {
+                        googleAccessToken = tokenResponse.access_token;
+                        onGoogleSignIn();
+                    }
+                },
+            });
+            
+            // Request access token
+            client.requestAccessToken();
+        }
+        
+        function onGoogleSignIn() {
+            googleDriveConnected = true;
+            
+            // Store the token in localStorage
+            storeToken(googleAccessToken);
+            
+            // Load Google Drive API
+            gapi.load('client', () => {
+                gapi.client.init({
+                    apiKey: GOOGLE_API_KEY,
+                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
+                }).then(() => {
+                    gapi.client.setToken({ access_token: googleAccessToken });
+                    
+                    document.getElementById('connectDriveBtn').style.display = 'none';
+                    document.getElementById('saveDriveBtn').style.display = 'block';
+                    document.getElementById('loadDriveBtn').style.display = 'block';
+                    
+                    alert('✅ Connecté à Google Drive !\n\nUtilisez "Sauvegarder Drive" ou "Charger Drive".\n\nVous resterez connecté pendant ~1h.');
+                    
+                    // Try to find existing file
+                    findDriveFile();
+                }).catch(error => {
+                    console.error('Error initializing client:', error);
+                    alert('❌ Erreur d\'initialisation de Google Drive');
+                });
+            });
+        }
+        
+        function findDriveFile() {
+            gapi.client.drive.files.list({
+                q: `name='${DRIVE_FILE_NAME}' and trashed=false`,
+                spaces: 'drive',
+                fields: 'files(id, name)'
+            }).then(response => {
+                const files = response.result.files;
+                if (files && files.length > 0) {
+                    driveFileId = files[0].id;
+                }
+            }).catch(error => {
+                console.error('Error finding file:', error);
+            });
+        }
+        
+        function saveToDrive() {
+            if (!googleDriveConnected) {
+                alert('⚠️ Connectez-vous d\'abord à Google Drive !');
+                return;
+            }
+            
+            // Check if token is expired
+            const tokenExpiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
+            if (tokenExpiry) {
+                const expiryDate = new Date(tokenExpiry);
+                const now = new Date();
+                
+                if (expiryDate <= now) {
+                    alert('🔄 Votre session Google Drive a expiré.\n\nVeuillez vous reconnecter.');
+                    clearStoredToken();
+                    googleDriveConnected = false;
+                    googleAccessToken = null;
+                    document.getElementById('connectDriveBtn').style.display = 'block';
+                    document.getElementById('saveDriveBtn').style.display = 'none';
+                    document.getElementById('loadDriveBtn').style.display = 'none';
+                    connectGoogleDrive();
+                    return;
+                }
+            }
+            
+            const dataToSave = {
+                version: '1.0',
+                lastSync: new Date().toISOString(),
+                clients: clients
+            };
+            
+            const dataStr = JSON.stringify(dataToSave, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            
+            const metadata = {
+                name: DRIVE_FILE_NAME,
+                mimeType: 'application/json'
+            };
+            
+            const form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+            form.append('file', blob);
+            
+            const method = driveFileId ? 'PATCH' : 'POST';
+            const url = driveFileId 
+                ? `https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=multipart`
+                : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': `Bearer ${googleAccessToken}`
+                },
+                body: form
+            }).then(response => {
+                if (response.status === 401) {
+                    // Token expired
+                    alert('🔄 Votre session Google Drive a expiré.\n\nVeuillez vous reconnecter.');
+                    clearStoredToken();
+                    googleDriveConnected = false;
+                    googleAccessToken = null;
+                    document.getElementById('connectDriveBtn').style.display = 'block';
+                    document.getElementById('saveDriveBtn').style.display = 'none';
+                    document.getElementById('loadDriveBtn').style.display = 'none';
+                    throw new Error('Token expired');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.id) {
+                    driveFileId = data.id;
+                    alert('✅ Données sauvegardées sur Google Drive !');
+                } else {
+                    throw new Error('Erreur lors de la sauvegarde');
+                }
+            }).catch(error => {
+                if (error.message !== 'Token expired') {
+                    alert('❌ Erreur lors de la sauvegarde sur Drive');
+                }
+                console.error(error);
+            });
+        }
+        
+        function loadFromDrive() {
+            if (!googleDriveConnected) {
+                alert('⚠️ Connectez-vous d\'abord à Google Drive !');
+                return;
+            }
+            
+            // Check if token is expired
+            const tokenExpiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
+            if (tokenExpiry) {
+                const expiryDate = new Date(tokenExpiry);
+                const now = new Date();
+                
+                if (expiryDate <= now) {
+                    alert('🔄 Votre session Google Drive a expiré.\n\nVeuillez vous reconnecter.');
+                    clearStoredToken();
+                    googleDriveConnected = false;
+                    googleAccessToken = null;
+                    document.getElementById('connectDriveBtn').style.display = 'block';
+                    document.getElementById('saveDriveBtn').style.display = 'none';
+                    document.getElementById('loadDriveBtn').style.display = 'none';
+                    connectGoogleDrive();
+                    return;
+                }
+            }
+            
+            if (!driveFileId) {
+                alert('❌ Aucun fichier trouvé sur Google Drive.\n\nSauvegardez d\'abord vos données avec "Sauvegarder Drive".');
+                return;
+            }
+            
+            fetch(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`, {
+                headers: {
+                    'Authorization': `Bearer ${googleAccessToken}`
+                }
+            }).then(response => {
+                if (response.status === 401) {
+                    // Token expired
+                    alert('🔄 Votre session Google Drive a expiré.\n\nVeuillez vous reconnecter.');
+                    clearStoredToken();
+                    googleDriveConnected = false;
+                    googleAccessToken = null;
+                    document.getElementById('connectDriveBtn').style.display = 'block';
+                    document.getElementById('saveDriveBtn').style.display = 'none';
+                    document.getElementById('loadDriveBtn').style.display = 'none';
+                    throw new Error('Token expired');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.clients) {
+                    if (clients.length > 0) {
+                        if (!confirm('⚠️ Attention : Cette action va remplacer toutes vos données locales par celles de Google Drive. Continuer ?')) {
+                            return;
+                        }
+                    }
+                    
+                    clients = data.clients;
+                    saveData();
+                    renderClients();
+                    alert(`✅ Données chargées depuis Google Drive !\n${clients.length} client(s) synchronisé(s)`);
+                } else {
+                    alert('❌ Fichier Drive invalide');
+                }
+            }).catch(error => {
+                if (error.message !== 'Token expired') {
+                    alert('❌ Erreur lors du chargement depuis Drive');
+                }
+                console.error(error);
+            });
+        }
+
+        // Coach Statistics Functions
+        let coachStatsCharts = {};
+
+        function renderCoachStats() {
+            const period = document.getElementById('statsPeriodFilter').value;
+            
+            // Calculate date range
+            let startDate = new Date(0); // Beginning of time
+            const endDate = new Date();
+            
+            if (period === 'month') {
+                startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+            } else if (period === '3months') {
+                startDate = new Date(endDate);
+                startDate.setMonth(startDate.getMonth() - 3);
+            } else if (period === '6months') {
+                startDate = new Date(endDate);
+                startDate.setMonth(startDate.getMonth() - 6);
+            } else if (period === 'year') {
+                startDate = new Date(endDate);
+                startDate.setFullYear(startDate.getFullYear() - 1);
+            }
+            
+            // Get current week start (Monday)
+            const weekStart = new Date(endDate);
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay() + (weekStart.getDay() === 0 ? -6 : 1));
+            weekStart.setHours(0, 0, 0, 0);
+            
+            // Collect all sessions in period
+            let allSessions = [];
+            let activeClientsSet = new Set();
+            let activeClientsThisWeek = new Set();
+            let clientSessionCounts = {};
+            
+            clients.forEach(client => {
+                if (!client.sessions) return;
+                
+                client.sessions.forEach(session => {
+                    const sessionDate = new Date(session.date);
+                    if (sessionDate >= startDate && sessionDate <= endDate) {
+                        allSessions.push({
+                            ...session,
+                            clientId: client.id,
+                            clientName: client.name
+                        });
+                        activeClientsSet.add(client.id);
+                        
+                        // Count sessions per client
+                        if (!clientSessionCounts[client.id]) {
+                            clientSessionCounts[client.id] = {
+                                name: client.name,
+                                count: 0
+                            };
+                        }
+                        clientSessionCounts[client.id].count++;
+                        
+                        // Check if in current week
+                        if (sessionDate >= weekStart) {
+                            activeClientsThisWeek.add(client.id);
+                        }
+                    }
+                });
+            });
+            
+            // Calculate stats
+            const totalSessions = allSessions.length;
+            const sessionsThisWeek = allSessions.filter(s => new Date(s.date) >= weekStart).length;
+            const totalHours = allSessions.reduce((sum, s) => sum + (s.duration || 0), 0) / 60;
+            const activeClients = activeClientsSet.size;
+            
+            // Session types
+            const soloSessions = allSessions.filter(s => !s.isGroup || (s.participants && s.participants.length === 1)).length;
+            const duoSessions = allSessions.filter(s => s.isGroup && s.participants && s.participants.length === 2).length;
+            const trioSessions = allSessions.filter(s => s.isGroup && s.participants && s.participants.length >= 3).length;
+            
+            // Most active client
+            let topClient = null;
+            let maxSessions = 0;
+            Object.values(clientSessionCounts).forEach(client => {
+                if (client.count > maxSessions) {
+                    maxSessions = client.count;
+                    topClient = client.name;
+                }
+            });
+            
+            const avgSessionsPerClient = activeClients > 0 ? (totalSessions / activeClients).toFixed(1) : 0;
+            
+            // Render cards
+            renderStatsCards({
+                totalSessions,
+                sessionsThisWeek,
+                totalHours: totalHours.toFixed(1),
+                activeClients,
+                activeClientsThisWeek: activeClientsThisWeek.size,
+                soloSessions,
+                duoSessions,
+                trioSessions,
+                topClient,
+                maxSessions,
+                avgSessionsPerClient
+            });
+            
+            // Render charts
+            renderStatsCharts(allSessions, startDate, endDate);
+        }
+
+        function renderStatsCards(stats) {
+            const cardsDiv = document.getElementById('statsCards');
+            
+            const soloPercent = stats.totalSessions > 0 ? ((stats.soloSessions / stats.totalSessions) * 100).toFixed(0) : 0;
+            const duoPercent = stats.totalSessions > 0 ? ((stats.duoSessions / stats.totalSessions) * 100).toFixed(0) : 0;
+            const trioPercent = stats.totalSessions > 0 ? ((stats.trioSessions / stats.totalSessions) * 100).toFixed(0) : 0;
+            
+            cardsDiv.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-icon">📅</div>
+                        <div class="stat-card-value">${stats.totalSessions}</div>
+                        <div class="stat-card-label">Séances totales</div>
+                        <div class="stat-card-sublabel">${stats.sessionsThisWeek} cette semaine</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon">👥</div>
+                        <div class="stat-card-value">${stats.activeClients}</div>
+                        <div class="stat-card-label">Clients actifs</div>
+                        <div class="stat-card-sublabel">${stats.activeClientsThisWeek} cette semaine</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon">⏱️</div>
+                        <div class="stat-card-value">${stats.totalHours}h</div>
+                        <div class="stat-card-label">Heures d'entraînement</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon">📊</div>
+                        <div class="stat-card-value">${stats.avgSessionsPerClient}</div>
+                        <div class="stat-card-label">Moyenne séances/client</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon">🏆</div>
+                        <div class="stat-card-value">${stats.maxSessions}</div>
+                        <div class="stat-card-label">Client le plus assidu</div>
+                        <div class="stat-card-sublabel">${stats.topClient || 'N/A'}</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon">🎯</div>
+                        <div class="stat-card-value">${stats.soloSessions}</div>
+                        <div class="stat-card-label">Séances Solo</div>
+                        <div class="stat-card-sublabel">${soloPercent}% du total</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon">👫</div>
+                        <div class="stat-card-value">${stats.duoSessions}</div>
+                        <div class="stat-card-label">Séances Duo</div>
+                        <div class="stat-card-sublabel">${duoPercent}% du total</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon">👨‍👩‍👦</div>
+                        <div class="stat-card-value">${stats.trioSessions}</div>
+                        <div class="stat-card-label">Séances Trio+</div>
+                        <div class="stat-card-sublabel">${trioPercent}% du total</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderStatsCharts(sessions, startDate, endDate) {
+            const chartsDiv = document.getElementById('statsCharts');
+            
+            if (sessions.length === 0) {
+                chartsDiv.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Aucune séance dans cette période</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Destroy old charts
+            Object.values(coachStatsCharts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            coachStatsCharts = {};
+            
+            // Group sessions by month
+            const sessionsByMonth = {};
+            sessions.forEach(session => {
+                const date = new Date(session.date);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                
+                if (!sessionsByMonth[monthKey]) {
+                    sessionsByMonth[monthKey] = {
+                        total: 0,
+                        solo: 0,
+                        duo: 0,
+                        trio: 0
+                    };
+                }
+                
+                sessionsByMonth[monthKey].total++;
+                
+                if (!session.isGroup || (session.participants && session.participants.length === 1)) {
+                    sessionsByMonth[monthKey].solo++;
+                } else if (session.participants && session.participants.length === 2) {
+                    sessionsByMonth[monthKey].duo++;
+                } else if (session.participants && session.participants.length >= 3) {
+                    sessionsByMonth[monthKey].trio++;
+                }
+            });
+            
+            // Sort months
+            const sortedMonths = Object.keys(sessionsByMonth).sort();
+            const monthLabels = sortedMonths.map(key => {
+                const [year, month] = key.split('-');
+                return new Date(year, parseInt(month) - 1).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
+            });
+            
+            const totalSessionsData = sortedMonths.map(key => sessionsByMonth[key].total);
+            const soloSessionsData = sortedMonths.map(key => sessionsByMonth[key].solo);
+            const duoSessionsData = sortedMonths.map(key => sessionsByMonth[key].duo);
+            const trioSessionsData = sortedMonths.map(key => sessionsByMonth[key].trio);
+            
+            chartsDiv.innerHTML = `
+                <div class="stats-chart-container">
+                    <h3>📈 Évolution du nombre de séances par mois</h3>
+                    <canvas id="sessionsEvolutionChart"></canvas>
+                </div>
+                <div class="stats-chart-container">
+                    <h3>🎯 Répartition des types de séances par mois</h3>
+                    <canvas id="sessionTypesChart"></canvas>
+                </div>
+            `;
+            
+            // Chart 1: Total sessions evolution
+            const ctx1 = document.getElementById('sessionsEvolutionChart').getContext('2d');
+            coachStatsCharts.evolution = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: monthLabels,
+                    datasets: [{
+                        label: 'Séances totales',
+                        data: totalSessionsData,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+            
+            // Chart 2: Session types breakdown
+            const ctx2 = document.getElementById('sessionTypesChart').getContext('2d');
+            coachStatsCharts.types = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: monthLabels,
+                    datasets: [
+                        {
+                            label: 'Solo',
+                            data: soloSessionsData,
+                            backgroundColor: '#667eea',
+                        },
+                        {
+                            label: 'Duo',
+                            data: duoSessionsData,
+                            backgroundColor: '#f39c12',
+                        },
+                        {
+                            label: 'Trio+',
+                            data: trioSessionsData,
+                            backgroundColor: '#e74c3c',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { 
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true },
+                        y: { 
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Personal Tracking Functions
+        let trackingChart = null;
+
+        function renderPersonalTracking() {
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client) return;
+            
+            const sessions = client.sessions || [];
+            
+            if (sessions.length === 0) {
+                document.getElementById('trackingChartContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Aucune séance enregistrée</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Les indicateurs de séance apparaîtront ici</p>
+                    </div>
+                `;
+                document.getElementById('trackingStats').innerHTML = '';
+                return;
+            }
+            
+            // Get period filter
+            const periodFilter = document.getElementById('trackingPeriodFilter').value;
+            let filteredSessions = [...sessions];
+            
+            if (periodFilter !== 'all') {
+                const monthsAgo = parseInt(periodFilter);
+                const cutoffDate = new Date();
+                cutoffDate.setMonth(cutoffDate.getMonth() - monthsAgo);
+                filteredSessions = sessions.filter(s => new Date(s.date) >= cutoffDate);
+            }
+            
+            if (filteredSessions.length === 0) {
+                document.getElementById('trackingChartContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>Aucune séance dans cette période</p>
+                    </div>
+                `;
+                document.getElementById('trackingStats').innerHTML = '';
+                return;
+            }
+            
+            // Sort by date
+            filteredSessions.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Prepare data - get ratings for current client
+            const dates = [];
+            const muscularData = [];
+            const cardioData = [];
+            const fatigueData = [];
+            const sleepData = [];
+            
+            filteredSessions.forEach(session => {
+                // Get ratings for this specific client
+                let ratings;
+                if (session.participantRatings && session.participantRatings[currentClientId]) {
+                    ratings = session.participantRatings[currentClientId];
+                } else if (session.ratings) {
+                    // Fallback for old format
+                    ratings = session.ratings;
+                } else {
+                    ratings = {};
+                }
+                
+                // Only add if at least one rating exists
+                if (ratings.muscular || ratings.cardio || ratings.fatigue || ratings.sleep) {
+                    dates.push(new Date(session.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }));
+                    muscularData.push(ratings.muscular || null);
+                    cardioData.push(ratings.cardio || null);
+                    fatigueData.push(ratings.fatigue || null);
+                    sleepData.push(ratings.sleep || null);
+                }
+            });
+            
+            if (dates.length === 0) {
+                document.getElementById('trackingChartContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Aucune note enregistrée dans cette période</p>
+                    </div>
+                `;
+                document.getElementById('trackingStats').innerHTML = '';
+                return;
+            }
+            
+            // Destroy old chart
+            if (trackingChart) {
+                trackingChart.destroy();
+            }
+            
+            // Create chart container
+            document.getElementById('trackingChartContainer').innerHTML = `
+                <div class="performance-chart">
+                    <h3>📈 Évolution des indicateurs de séance</h3>
+                    <canvas id="trackingChart"></canvas>
+                </div>
+            `;
+            
+            // Create chart
+            const ctx = document.getElementById('trackingChart').getContext('2d');
+            trackingChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: '💪 Difficulté musculaire',
+                            data: muscularData,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.3,
+                            spanGaps: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: '❤️ Difficulté cardio',
+                            data: cardioData,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.3,
+                            spanGaps: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: '😴 Niveau de fatigue',
+                            data: fatigueData,
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            tension: 0.3,
+                            spanGaps: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: '🌙 Qualité du sommeil',
+                            data: sleepData,
+                            borderColor: '#9b59b6',
+                            backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                            tension: 0.3,
+                            spanGaps: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { 
+                            display: true, 
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: { 
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return value + '/10';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Note sur 10'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date des séances'
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+            
+            // Calculate stats
+            const calculateAvg = (data) => {
+                const filtered = data.filter(v => v !== null);
+                if (filtered.length === 0) return null;
+                return (filtered.reduce((a, b) => a + b, 0) / filtered.length).toFixed(1);
+            };
+            
+            const avgMuscular = calculateAvg(muscularData);
+            const avgCardio = calculateAvg(cardioData);
+            const avgFatigue = calculateAvg(fatigueData);
+            const avgSleep = calculateAvg(sleepData);
+            
+            // Render stats
+            document.getElementById('trackingStats').innerHTML = `
+                <h3 style="margin-bottom: 20px; color: #333;">📊 Moyennes sur la période</h3>
+                <div class="tracking-stats-grid">
+                    ${avgMuscular ? `
+                        <div class="tracking-stat-card">
+                            <h4>💪 Difficulté musculaire</h4>
+                            <div class="tracking-stat-value">${avgMuscular}</div>
+                            <div class="tracking-stat-label">Moyenne sur 10</div>
+                        </div>
+                    ` : ''}
+                    ${avgCardio ? `
+                        <div class="tracking-stat-card">
+                            <h4>❤️ Difficulté cardio</h4>
+                            <div class="tracking-stat-value">${avgCardio}</div>
+                            <div class="tracking-stat-label">Moyenne sur 10</div>
+                        </div>
+                    ` : ''}
+                    ${avgFatigue ? `
+                        <div class="tracking-stat-card">
+                            <h4>😴 Niveau de fatigue</h4>
+                            <div class="tracking-stat-value">${avgFatigue}</div>
+                            <div class="tracking-stat-label">Moyenne sur 10</div>
+                        </div>
+                    ` : ''}
+                    ${avgSleep ? `
+                        <div class="tracking-stat-card">
+                            <h4>🌙 Qualité du sommeil</h4>
+                            <div class="tracking-stat-value">${avgSleep}</div>
+                            <div class="tracking-stat-label">Moyenne sur 10</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Performance Tests Functions
+        function savePerformanceTest(event) {
+            event.preventDefault();
+            
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client) return;
+            
+            // Collect test data
+            const testData = {
+                id: Date.now(),
+                date: document.getElementById('testDate').value,
+                pompes: document.getElementById('test_pompes').value ? parseInt(document.getElementById('test_pompes').value) : null,
+                planche: document.getElementById('test_planche').value ? parseInt(document.getElementById('test_planche').value) : null,
+                oblique_gauche: document.getElementById('test_oblique_gauche').value ? parseInt(document.getElementById('test_oblique_gauche').value) : null,
+                oblique_droit: document.getElementById('test_oblique_droit').value ? parseInt(document.getElementById('test_oblique_droit').value) : null,
+                amrap_squats: document.getElementById('test_amrap_squats').value ? parseInt(document.getElementById('test_amrap_squats').value) : null,
+                amrap_burpees: document.getElementById('test_amrap_burpees').value ? parseInt(document.getElementById('test_amrap_burpees').value) : null,
+                amrap_situp: document.getElementById('test_amrap_situp').value ? parseInt(document.getElementById('test_amrap_situp').value) : null
+            };
+            
+            // Check if at least one test was filled
+            const hasData = Object.keys(testData).some(key => 
+                key !== 'id' && key !== 'date' && testData[key] !== null
+            );
+            
+            if (!hasData) {
+                alert('Veuillez renseigner au moins un test');
+                return;
+            }
+            
+            // Initialize performanceTests array if needed
+            if (!client.performanceTests) {
+                client.performanceTests = [];
+            }
+            
+            // Add test
+            client.performanceTests.push(testData);
+            
+            // Sort by date
+            client.performanceTests.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Save
+            saveData();
+            
+            // Reset form
+            document.getElementById('performanceTestForm').reset();
+            document.getElementById('testDate').valueAsDate = new Date();
+            
+            // Refresh display
+            renderPerformanceData();
+            
+            alert('Test de performance enregistré !');
+        }
+
+        function renderPerformanceData() {
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client) return;
+            
+            const tests = client.performanceTests || [];
+            
+            // Render charts
+            renderPerformanceCharts(tests);
+            
+            // Render history table
+            renderPerformanceHistory(tests);
+        }
+
+        let performanceCharts = {};
+
+        function renderPerformanceCharts(tests) {
+            const chartsDiv = document.getElementById('performanceCharts');
+            
+            if (tests.length === 0) {
+                chartsDiv.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Aucun test de performance enregistré</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Utilisez le formulaire ci-dessus pour ajouter des tests</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Filter tests from last year
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+            const filteredTests = tests.filter(t => new Date(t.date) >= oneYearAgo);
+            
+            // Destroy old charts
+            Object.values(performanceCharts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            performanceCharts = {};
+            
+            chartsDiv.innerHTML = `
+                <div class="performance-chart">
+                    <h3>💪 Pompes (répétitions max)</h3>
+                    <canvas id="chartPompes"></canvas>
+                </div>
+                <div class="performance-chart">
+                    <h3>⏱️ Gainages (temps en secondes)</h3>
+                    <canvas id="chartGainages"></canvas>
+                </div>
+                <div class="performance-chart">
+                    <h3>🔥 AMRAP 1min30 (nombre de répétitions)</h3>
+                    <canvas id="chartAMRAP"></canvas>
+                </div>
+            `;
+            
+            // Prepare data
+            const dates = filteredTests.map(t => new Date(t.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }));
+            
+            // Chart 1: Pompes
+            const pompesData = filteredTests.map(t => t.pompes);
+            if (pompesData.some(v => v !== null)) {
+                const ctxPompes = document.getElementById('chartPompes').getContext('2d');
+                performanceCharts.pompes = new Chart(ctxPompes, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Pompes',
+                            data: pompesData,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            spanGaps: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Chart 2: Gainages
+            const plancheData = filteredTests.map(t => t.planche);
+            const obliqueGaucheData = filteredTests.map(t => t.oblique_gauche);
+            const obliqueDroitData = filteredTests.map(t => t.oblique_droit);
+            
+            if (plancheData.some(v => v !== null) || obliqueGaucheData.some(v => v !== null) || obliqueDroitData.some(v => v !== null)) {
+                const ctxGainages = document.getElementById('chartGainages').getContext('2d');
+                performanceCharts.gainages = new Chart(ctxGainages, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [
+                            {
+                                label: 'Planche',
+                                data: plancheData,
+                                borderColor: '#667eea',
+                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                tension: 0.3,
+                                spanGaps: true
+                            },
+                            {
+                                label: 'Oblique gauche',
+                                data: obliqueGaucheData,
+                                borderColor: '#f39c12',
+                                backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                                tension: 0.3,
+                                spanGaps: true
+                            },
+                            {
+                                label: 'Oblique droit',
+                                data: obliqueDroitData,
+                                borderColor: '#e74c3c',
+                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                tension: 0.3,
+                                spanGaps: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: true, position: 'top' }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Chart 3: AMRAP
+            const squatsData = filteredTests.map(t => t.amrap_squats);
+            const burpeesData = filteredTests.map(t => t.amrap_burpees);
+            const situpData = filteredTests.map(t => t.amrap_situp);
+            
+            if (squatsData.some(v => v !== null) || burpeesData.some(v => v !== null) || situpData.some(v => v !== null)) {
+                const ctxAMRAP = document.getElementById('chartAMRAP').getContext('2d');
+                performanceCharts.amrap = new Chart(ctxAMRAP, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [
+                            {
+                                label: 'Squats',
+                                data: squatsData,
+                                borderColor: '#27ae60',
+                                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                                tension: 0.3,
+                                spanGaps: true
+                            },
+                            {
+                                label: 'Burpees',
+                                data: burpeesData,
+                                borderColor: '#e67e22',
+                                backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                                tension: 0.3,
+                                spanGaps: true
+                            },
+                            {
+                                label: 'Sit-up',
+                                data: situpData,
+                                borderColor: '#9b59b6',
+                                backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                                tension: 0.3,
+                                spanGaps: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: true, position: 'top' }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function renderPerformanceHistory(tests) {
+            const historyDiv = document.getElementById('performanceHistory');
+            
+            if (tests.length === 0) {
+                historyDiv.innerHTML = '';
+                return;
+            }
+            
+            // Sort by date descending
+            const sortedTests = [...tests].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const tableRows = sortedTests.map((test, index) => {
+                const date = new Date(test.date).toLocaleDateString('fr-FR', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                
+                // Calculate improvements
+                const prevTest = index < sortedTests.length - 1 ? sortedTests[index + 1] : null;
+                
+                const formatValue = (current, prev, unit = '') => {
+                    if (current === null) return '-';
+                    let html = `<span class="performance-value">${current}${unit}</span>`;
+                    if (prev !== null && current !== null) {
+                        const diff = current - prev;
+                        if (diff > 0) {
+                            html += ` <span class="performance-improvement">+${diff}${unit}</span>`;
+                        } else if (diff < 0) {
+                            html += ` <span class="performance-decline">${diff}${unit}</span>`;
+                        }
+                    }
+                    return html;
+                };
+                
+                return `
+                    <tr>
+                        <td>${date}</td>
+                        <td>${formatValue(test.pompes, prevTest?.pompes)}</td>
+                        <td>${formatValue(test.planche, prevTest?.planche, 's')}</td>
+                        <td>${formatValue(test.oblique_gauche, prevTest?.oblique_gauche, 's')}</td>
+                        <td>${formatValue(test.oblique_droit, prevTest?.oblique_droit, 's')}</td>
+                        <td>${formatValue(test.amrap_squats, prevTest?.amrap_squats)}</td>
+                        <td>${formatValue(test.amrap_burpees, prevTest?.amrap_burpees)}</td>
+                        <td>${formatValue(test.amrap_situp, prevTest?.amrap_situp)}</td>
+                        <td>
+                            <button class="delete-session-btn" onclick="deletePerformanceTest(${test.id})" style="padding: 5px 10px; font-size: 12px;">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            historyDiv.innerHTML = `
+                <h3 style="margin-bottom: 15px; color: #333;">📋 Historique des tests</h3>
+                <table class="performance-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Pompes</th>
+                            <th>Planche</th>
+                            <th>Oblique G</th>
+                            <th>Oblique D</th>
+                            <th>Squats</th>
+                            <th>Burpees</th>
+                            <th>Sit-up</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function deletePerformanceTest(testId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) return;
+            
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client || !client.performanceTests) return;
+            
+            client.performanceTests = client.performanceTests.filter(t => t.id !== testId);
+            
+            saveData();
+            renderPerformanceData();
+            alert('Test supprimé avec succès !');
+        }
+
+        // Initialize on load
+        window.onload = init;
+    </script>
+</body>
+</html>
